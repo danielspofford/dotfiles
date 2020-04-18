@@ -1,0 +1,17 @@
+[user]
+	email = dannyspofford@gmail.com
+	name = Daniel Spofford
+[url "git@github.com:"]
+  insteadOf = https://github.com/
+[commit]
+	template = ~/.gitmessage
+[core]
+  excludesfile = ~/.gitignore
+  editor = nvim
+  pager = less -FXR
+[includeIf "gitdir:~/dev/git/daniel/"]
+  path = ~/dev/git/daniel/.gitconfig
+[includeIf "gitdir:~/dev/git/very-possible/"]
+  path = ~/dev/git/very-possible/.gitconfig
+[includeIf "gitdir:~/dev/git/forks/"]
+  path = ~/dev/git/forks/.gitconfig
