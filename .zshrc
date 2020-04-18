@@ -1,25 +1,11 @@
 # Path to your oh-my-zsh installation.
 export ZSH=/Users/daniel/.oh-my-zsh
 
-ZSH_THEME="yass"
+ZSH_THEME="spoff"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
 COMPLETION_WAITING_DOTS="true"
 
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.
-# The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# HIST_STAMPS="mm/dd/yyyy"
-
-# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
 plugins=(git)
 
 source $ZSH/oh-my-zsh.sh
@@ -64,9 +50,19 @@ export PATH="$HOME/dev/dotfiles/bin:$PATH"
 export FZF_DEFAULT_COMMAND='rg --hidden -l --glob "!.git/*" ""'
 
 # Ensure SSH keys added to agent
-if ! ssh-add -l | grep id_rsa &>/dev/null; then
-  ssh-add ~/.ssh/id_rsa
-fi
+# Add ssh keys
+if ! ssh-add -l | grep dannyspofford &>/dev/null; then
+  keys=(
+    id_rsa
+  )
+  
+  for key in ${keys[@]}; do
+    keyfile="$HOME/.ssh/$key"
+    if [[ -f $keyfile && -z "$(ssh-add -l | grep $key)" ]]; then
+      ssh-add $keyfile
+    fi
+  done
+fi  
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/daniel/google-cloud-sdk/path.zsh.inc' ]; then source '/Users/daniel/google-cloud-sdk/path.zsh.inc'; fi
@@ -86,9 +82,26 @@ fi
 
 eval "$(direnv hook zsh)"
 
-. $HOME/.asdf/asdf.sh
+echo -e "\n. $(brew --prefix asdf)/asdf.sh" >> ~/.zshrc
 
-. $HOME/.asdf/completions/asdf.bash
 export PATH="/usr/local/opt/openssl/bin:$PATH"
 
 export SDKROOT="$(xcrun --sdk macosx --show-sdk-path)"
+
+. /usr/local/opt/asdf/asdf.sh
+
+. /usr/local/opt/asdf/asdf.sh
+
+. /usr/local/opt/asdf/asdf.sh
+
+. /usr/local/opt/asdf/asdf.sh
+
+. /usr/local/opt/asdf/asdf.sh
+
+. /usr/local/opt/asdf/asdf.sh
+
+. /usr/local/opt/asdf/asdf.sh
+
+. /usr/local/opt/asdf/asdf.sh
+
+. /usr/local/opt/asdf/asdf.sh

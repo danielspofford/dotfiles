@@ -1,34 +1,29 @@
-" must be set before plugins are loaded
-" let g:gruvbox_contrast_dark="soft"
-
-" call plug#begin('~/.config/nvim/plugged')
-set rtp+=~/.vim/bundle/Vundle.vim
 set rtp+=/usr/local/opt/fzf
-call vundle#begin()
+call plug#begin()
 " general nvim improvements
-Plugin 'junegunn/fzf.vim' " vim integration for fzf
-Plugin 'jlanzarotta/bufexplorer' " view recent vim buffers
-Plugin 'tpope/vim-vinegar' " improves directory navigation on top of netrw
-Plugin 'morhetz/gruvbox' " vim color scheme
+Plug 'junegunn/fzf.vim' " vim integration for fzf
+Plug 'jlanzarotta/bufexplorer' " view recent vim buffers
+Plug 'tpope/vim-vinegar' " improves directory navigation on top of netrw
 
 " development improvements
-Plugin 'editorconfig/editorconfig-vim' " respect various rules like line length
-Plugin 'airblade/vim-gitgutter' " git status in nvim gutter
-Plugin 'rizzatti/dash.vim' " integration with dash documentation tool
-Plugin 'w0rp/ale' " linters and fixers
-Plugin 'sheerun/vim-polyglot' " sweeping language support
-Plugin 'ianks/vim-tsx' " fix tsx highlighting
-Plugin 'tpope/vim-git' " git syntax hightlighting
-Plugin 'slashmili/alchemist.vim' " elixir completion, jump to definition
-Plugin 'ycm-core/youcompleteme'
-Plugin 'tpope/vim-commentary' " support for toggling comments
-Plugin 'tpope/vim-endwise' " adds closing tags for various languages on <enter>
-Plugin 'tpope/vim-surround' " CRUDing surrounding tags/quotes
-Plugin 'tpope/vim-fugitive' " git wrapper
+Plug 'joshdick/onedark.vim'
+Plug 'editorconfig/editorconfig-vim' " respect various rules like line length
+Plug 'airblade/vim-gitgutter' " git status in nvim gutter
+Plug 'rizzatti/dash.vim' " integration with dash documentation tool
+Plug 'w0rp/ale' " linters and fixers
+Plug 'sheerun/vim-polyglot' " sweeping language support
+Plug 'ianks/vim-tsx' " fix tsx highlighting
+Plug 'tpope/vim-git' " git syntax hightlighting
+Plug 'slashmili/alchemist.vim' " elixir completion, jump to definition
+Plug 'ycm-core/youcompleteme'
+Plug 'tpope/vim-commentary' " support for toggling comments
+Plug 'tpope/vim-endwise' " adds closing tags for various languages on <enter>
+Plug 'tpope/vim-surround' " CRUDing surrounding tags/quotes
+Plug 'tpope/vim-fugitive' " git wrapper
 
 " languages
-Plugin 'fatih/vim-go'
-call vundle#end()
+Plug 'fatih/vim-go'
+call plug#end()
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " GOLANG
@@ -77,8 +72,8 @@ let g:ale_fixers = {
 let g:mapleader="\<space>"
 
 " Theme
-set background=dark
-colorscheme gruvbox
+syntax on
+colorscheme onedark
 
 " Whitespaces
 highlight ExtraWhitespace ctermbg=red guibg=red
