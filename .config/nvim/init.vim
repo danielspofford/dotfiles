@@ -1,38 +1,91 @@
-" must be set before plugins are loaded
-" let g:gruvbox_contrast_dark="soft"
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" GENERAL
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" call plug#begin('~/.config/nvim/plugged')
-set rtp+=~/.vim/bundle/Vundle.vim
 set rtp+=/usr/local/opt/fzf
-call vundle#begin()
+call plug#begin()
 " general nvim improvements
-Plugin 'junegunn/fzf.vim' " vim integration for fzf
-Plugin 'jlanzarotta/bufexplorer' " view recent vim buffers
-Plugin 'tpope/vim-vinegar' " improves directory navigation on top of netrw
-Plugin 'morhetz/gruvbox' " vim color scheme
+Plug 'junegunn/fzf.vim' " vim integration for fzf
+Plug 'jlanzarotta/bufexplorer' " view recent vim buffers
+Plug 'tpope/vim-vinegar' " improves directory navigation on top of netrw
 
 " development improvements
-Plugin 'editorconfig/editorconfig-vim' " respect various rules like line length
-Plugin 'airblade/vim-gitgutter' " git status in nvim gutter
-Plugin 'rizzatti/dash.vim' " integration with dash documentation tool
-Plugin 'w0rp/ale' " linters and fixers
-Plugin 'sheerun/vim-polyglot' " sweeping language support
-Plugin 'ianks/vim-tsx' " fix tsx highlighting
-Plugin 'tpope/vim-git' " git syntax hightlighting
-Plugin 'slashmili/alchemist.vim' " elixir completion, jump to definition
-Plugin 'ycm-core/youcompleteme'
-Plugin 'tpope/vim-commentary' " support for toggling comments
-Plugin 'tpope/vim-endwise' " adds closing tags for various languages on <enter>
-Plugin 'tpope/vim-surround' " CRUDing surrounding tags/quotes
-Plugin 'tpope/vim-fugitive' " git wrapper
-
-" languages
-Plugin 'fatih/vim-go'
-call vundle#end()
+Plug 'neovim/nvim-lspconfig'
+Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'joshdick/onedark.vim'
+Plug 'editorconfig/editorconfig-vim' " respect various rules like line length
+Plug 'airblade/vim-gitgutter' " git status in nvim gutter
+Plug 'rizzatti/dash.vim' " integration with dash documentation tool
+Plug 'ianks/vim-tsx' " fix tsx highlighting
+Plug 'tpope/vim-git' " git syntax hightlighting
+Plug 'tpope/vim-commentary' " support for toggling comments
+Plug 'tpope/vim-endwise' " adds closing tags for various languages on <enter>
+Plug 'tpope/vim-surround' " CRUDing surrounding tags/quotes
+Plug 'tpope/vim-fugitive' " git wrapper
+Plug 'fatih/vim-go'
+call plug#end()
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" GOLANG
+" LANGUAGES
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+lua <<EOF
+local on_attach = function(client, buffer)
+  if client.name == "yamlls" then
+    client.resolved_capabilities.document_formatting = true
+  end
+end
+
+local on_init = function(client, initialize_result)
+  client.resolved_capabilities.document_formatting = true
+end
+
+require'lspconfig'.eslint.setup{
+  on_init = on_init,
+  settings = {
+    codeActionsOnSave = {
+      enable = false
+    }
+  }
+}
+
+require'lspconfig'.yamlls.setup{
+  on_attach = on_attach,
+  settings = {
+    yaml = {
+      schemas = {
+        ["https://github.com/OAI/OpenAPI-Specification/blob/main/schemas/v3.1/schema.yaml"] = "openapi.yaml"
+      },
+      format = {
+        enable = true,
+        singleQuote = false
+      }
+    }
+  }
+}
+
+require'lspconfig'.elixirls.setup{
+  cmd = { "/Users/daniel/repositories/elixir-ls/language_server.sh" }
+}
+
+require'lspconfig'.elixirls.setup{
+  cmd = { "/Users/daniel/repositories/elixir-ls/language_server.sh" }
+}
+
+require'nvim-treesitter.configs'.setup {
+  ensure_installed = { "elixir", "hcl", "lua", "rust" },
+  sync_install = false,
+  ignore_install = { },
+  highlight = {
+    enable = true,
+    disable = { },
+  },
+}
+EOF
+
+autocmd BufWritePre * lua vim.lsp.buf.formatting_sync()
+
+" golang
 au FileType go set expandtab
 au FileType go set shiftwidth=2
 au FileType go set softtabstop=2
@@ -53,32 +106,43 @@ let g:go_auto_sameids = 1
 let g:go_fmt_command = "goimports"
 let g:go_auto_type_info = 1
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" ENVRC
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 " set comment string for .envrc files
 au BufEnter,BufNew .envrc setlocal commentstring=#\ %s
 au BufEnter,BufNew mosquitto.conf setlocal commentstring=#\ %s
 
-let g:ale_fix_on_save = 1
-let g:ale_linters = {
-  \ 'javascript': ['eslint', 'stylelint'],
-  \ 'typescript': ['tslint', 'tsserver'],
-  \ 'elixir': [],
-  \}
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" EDITOR CONFIG
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-let g:ale_fixers = {
-  \ 'elm': ['format'],
-  \ 'elixir': ['mix_format'],
-  \ 'javascript': ['prettier'],
-  \ 'json': ['prettier'],
-  \ 'python': ['black', 'isort'],
-  \ 'typescript': ['prettier'],
-  \}
+let g:EditorConfig_exec_path = '~/.editorconfig'
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" VIM
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Leader
 let g:mapleader="\<space>"
 
 " Theme
-set background=dark
-colorscheme gruvbox
+"Use 24-bit (true-color) mode in Vim/Neovim when outside tmux.
+"If you're using tmux version 2.2 or later, you can remove the outermost $TMUX check and use tmux's 24-bit color support
+"(see < http://sunaku.github.io/tmux-24bit-color.html#usage > for more information.)
+if (has("nvim"))
+  "For Neovim 0.1.3 and 0.1.4 < https://github.com/neovim/neovim/pull/2198 >
+  let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+endif
+"For Neovim > 0.1.5 and Vim > patch 7.4.1799 < https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 >
+"Based on Vim patch 7.4.1770 (`guicolors` option) < https://github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd >
+" < https://github.com/neovim/neovim/wiki/Following-HEAD#20160511 >
+if (has("termguicolors"))
+  set termguicolors
+endif
+syntax on
+colorscheme onedark
 
 " Whitespaces
 highlight ExtraWhitespace ctermbg=red guibg=red
@@ -97,8 +161,8 @@ set smartcase
 " Swap files
 set dir=~/.vim-tmp//
 
-" TBD
-let g:EditorConfig_exec_path = '~/.editorconfig'
+" Allow naviagting away from unsaved buffers
+set hidden
 
 let g:bufExplorerShowRelativePath = 1
 let g:bufExplorerSortBy = "fullpath"
@@ -107,9 +171,6 @@ let g:Lf_WildIgnore={
 	\ 'dir': ['.git'],
 	\ 'file': []
 	\}
-
-" Allow naviagting away from unsaved buffers
-set hidden
 
 " Keybindings
 nnoremap <Leader>e :BufExplorer<cr>
@@ -136,9 +197,6 @@ command! -bang -nargs=* Find call fzf#vim#grep(
 let g:python_host_prog='~/virtualenvironment/python2_latest/bin/python'
 let g:python3_host_prog='~/virtualenvironment/python3_latest/bin/python'
 
-if has('nvim-0.1.5')
-  set termguicolors
-endif
 
 set runtimepath^=~/.vim runtimepath+=~/.vim/after
 let &packpath = &runtimepath

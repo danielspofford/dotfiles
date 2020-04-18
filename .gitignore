@@ -3,3 +3,4 @@
 .direnv
 .tool-versions
 .no-commit
+artifacts

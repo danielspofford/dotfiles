@@ -1,17 +1,15 @@
 [user]
-	email = dannyspofford@gmail.com
-	name = Daniel Spofford
+  email = 868014+danielspofford@users.noreply.github.com
+  name = Daniel Spofford
+	signingkey = 21406158E4448D8B
 [url "git@github.com:"]
   insteadOf = https://github.com/
 [commit]
-	template = ~/.gitmessage
+  template = ~/.gitmessage
+	gpgsign = true
 [core]
   excludesfile = ~/.gitignore
   editor = nvim
   pager = less -FXR
-[includeIf "gitdir:~/dev/git/daniel/"]
-  path = ~/dev/git/daniel/.gitconfig
-[includeIf "gitdir:~/dev/git/very-possible/"]
-  path = ~/dev/git/very-possible/.gitconfig
-[includeIf "gitdir:~/dev/git/forks/"]
-  path = ~/dev/git/forks/.gitconfig
+[init]
+	defaultBranch = main
