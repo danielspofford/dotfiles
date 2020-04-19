@@ -1,2 +1,0 @@
-brew install asdf fzf fasd gh neovim tmux direnv ripgrep
-brew cask install iterm2 rectangle
