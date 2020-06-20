@@ -13,6 +13,7 @@ trim_trailing_whitespace = true
 max_line_length = 98
 
 [**.{php,py,elm}]
+max_line_length = 80
 indent_size = 4
 
 [**.envrc]

@@ -55,14 +55,14 @@ if ! ssh-add -l | grep dannyspofford &>/dev/null; then
   keys=(
     id_rsa
   )
-  
+
   for key in ${keys[@]}; do
     keyfile="$HOME/.ssh/$key"
     if [[ -f $keyfile && -z "$(ssh-add -l | grep $key)" ]]; then
       ssh-add $keyfile
     fi
   done
-fi  
+fi
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/daniel/google-cloud-sdk/path.zsh.inc' ]; then source '/Users/daniel/google-cloud-sdk/path.zsh.inc'; fi
@@ -82,26 +82,10 @@ fi
 
 eval "$(direnv hook zsh)"
 
-echo -e "\n. $(brew --prefix asdf)/asdf.sh" >> ~/.zshrc
-
 export PATH="/usr/local/opt/openssl/bin:$PATH"
 
 export SDKROOT="$(xcrun --sdk macosx --show-sdk-path)"
 
 . /usr/local/opt/asdf/asdf.sh
 
-. /usr/local/opt/asdf/asdf.sh
-
-. /usr/local/opt/asdf/asdf.sh
-
-. /usr/local/opt/asdf/asdf.sh
-
-. /usr/local/opt/asdf/asdf.sh
-
-. /usr/local/opt/asdf/asdf.sh
-
-. /usr/local/opt/asdf/asdf.sh
-
-. /usr/local/opt/asdf/asdf.sh
-
-. /usr/local/opt/asdf/asdf.sh
+export PATH="/usr/local/sbin:$PATH"
