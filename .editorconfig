@@ -12,7 +12,11 @@ trim_trailing_whitespace = true
 [**.{ex,exs}]
 max_line_length = 98
 
-[**.{php,py,elm}]
+[**.py]
+max_line_length = 88
+indent_size = 4
+
+[**.{php,elm}]
 max_line_length = 80
 indent_size = 4
 
