@@ -1,10 +1,10 @@
 [user]
-	email = dannyspofford@gmail.com
-	name = Daniel Spofford
+  email = dannyspofford@gmail.com
+  name = Daniel Spofford
 [url "git@github.com:"]
   insteadOf = https://github.com/
 [commit]
-	template = ~/.gitmessage
+  template = ~/.gitmessage
 [core]
   excludesfile = ~/.gitignore
   editor = nvim
