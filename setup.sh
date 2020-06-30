@@ -1,6 +1,8 @@
-#
-# brew
-#
+mkdir artifacts
+
+##
+## brew
+##
 brew install \
   asdf \
   autoconf \
@@ -52,9 +54,9 @@ brew cask install \
   squashfs \
   virtualbox
 
-#
-# asdf
-#
+##
+## asdf
+##
 asdf plugin-add erlang https://github.com/asdf-vm/asdf-erlang.git
 asdf plugin-add elixir https://github.com/asdf-vm/asdf-elixir.git
 asdf plugin-add nodejs https://github.com/asdf-vm/asdf-nodejs.git
@@ -62,8 +64,24 @@ asdf plugin-add python
 asdf plugin-add java
 bash ~/.asdf/plugins/nodejs/bin/import-release-team-keyring
 echo -e "\n. $(brew --prefix asdf)/asdf.sh" >> ~/.zshrc
+asdf install erlang 23.0.2
+asdf global erlang 23.0.2
+asdf install elixir 1.10.3-otp-23
+asdf global elixir 1.10.3-otp-23
+
+##
+## xcode
+##
+xcode-select --install
 
 #
-# xcode
+# elixirls
 #
-xcode-select --install
+git clone git@github.com:elixir-lsp/elixir-ls.git artifacts/elixir-ls
+cd artifacts/elixir-ls
+git checkout tags/v0.5.0
+asdf local erlang 23.0.2
+asdf local elixir 1.10.3-otp-23
+mix local.hex --force
+mix local.rebar --force
+mix do deps.get, compile, elixir_ls.release -o rel

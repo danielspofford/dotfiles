@@ -1,3 +1,7 @@
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" GENERAL
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 set rtp+=/usr/local/opt/fzf
 call plug#begin()
 " general nvim improvements
@@ -10,24 +14,36 @@ Plug 'joshdick/onedark.vim'
 Plug 'editorconfig/editorconfig-vim' " respect various rules like line length
 Plug 'airblade/vim-gitgutter' " git status in nvim gutter
 Plug 'rizzatti/dash.vim' " integration with dash documentation tool
-Plug 'w0rp/ale' " linters and fixers
+Plug 'dense-analysis/ale' " linters and fixers
 Plug 'sheerun/vim-polyglot' " sweeping language support
 Plug 'ianks/vim-tsx' " fix tsx highlighting
 Plug 'tpope/vim-git' " git syntax hightlighting
-Plug 'slashmili/alchemist.vim' " elixir completion, jump to definition
 Plug 'ycm-core/youcompleteme'
 Plug 'tpope/vim-commentary' " support for toggling comments
 Plug 'tpope/vim-endwise' " adds closing tags for various languages on <enter>
 Plug 'tpope/vim-surround' " CRUDing surrounding tags/quotes
 Plug 'tpope/vim-fugitive' " git wrapper
+" Plug 'vim-airline/vim-airline' " status bar
 
-" languages
+Plug 'autozimu/LanguageClient-neovim', {
+    \ 'branch': 'next',
+    \ 'do': 'bash install.sh',
+    \ }
+let g:LanguageClient_settingsPath = '/Users/daniel/git/daniel/dotfiles/neovim-languageclient-settings.json'
+
 Plug 'fatih/vim-go'
 call plug#end()
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" GOLANG
+" LANGUAGES
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" elixir
+let g:LanguageClient_serverCommands = {
+\ 'elixir': ['/Users/daniel/git/daniel/dotfiles/artifacts/elixir-ls/rel/language_server.sh'],
+\ }
+
+" golang
 au FileType go set expandtab
 au FileType go set shiftwidth=2
 au FileType go set softtabstop=2
@@ -48,11 +64,21 @@ let g:go_auto_sameids = 1
 let g:go_fmt_command = "goimports"
 let g:go_auto_type_info = 1
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" ENVRC
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 " set comment string for .envrc files
 au BufEnter,BufNew .envrc setlocal commentstring=#\ %s
 au BufEnter,BufNew mosquitto.conf setlocal commentstring=#\ %s
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" ALE
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+let g:airline#extensions#ale#enabled = 1
 let g:ale_fix_on_save = 1
+let g:ale_lint_on_save = 1
 let g:ale_linters = {
   \ 'javascript': ['eslint', 'stylelint'],
   \ 'typescript': ['tslint', 'tsserver'],
@@ -67,6 +93,16 @@ let g:ale_fixers = {
   \ 'python': ['black', 'isort'],
   \ 'typescript': ['prettier'],
   \}
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" EDITOR CONFIG
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+let g:EditorConfig_exec_path = '~/.editorconfig'
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" VIM
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Leader
 let g:mapleader="\<space>"
@@ -105,8 +141,8 @@ set smartcase
 " Swap files
 set dir=~/.vim-tmp//
 
-" TBD
-let g:EditorConfig_exec_path = '~/.editorconfig'
+" Allow naviagting away from unsaved buffers
+set hidden
 
 let g:bufExplorerShowRelativePath = 1
 let g:bufExplorerSortBy = "fullpath"
@@ -116,10 +152,13 @@ let g:Lf_WildIgnore={
 	\ 'file': []
 	\}
 
-" Allow naviagting away from unsaved buffers
-set hidden
-
 " Keybindings
+nnoremap <F5> :call LanguageClient_contextMenu()<CR>
+" Or map each action separately
+nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
+nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
+nnoremap <silent> <F2> :call LanguageClient#textDocument_rename()<CR>
+
 nnoremap <Leader>e :BufExplorer<cr>
 nnoremap <Leader>f :Files<cr>
 " command! -bang Files call fzf#vim#files('--glob !.git/*', <bang>0)
@@ -144,9 +183,6 @@ command! -bang -nargs=* Find call fzf#vim#grep(
 let g:python_host_prog='~/virtualenvironment/python2_latest/bin/python'
 let g:python3_host_prog='~/virtualenvironment/python3_latest/bin/python'
 
-if has('nvim-0.1.5')
-  set termguicolors
-endif
 
 set runtimepath^=~/.vim runtimepath+=~/.vim/after
 let &packpath = &runtimepath
