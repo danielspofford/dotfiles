@@ -4,7 +4,6 @@ mkdir artifacts
 ## brew
 ##
 brew install \
-  asdf \
   autoconf \
   automake \
   ccache \
@@ -42,9 +41,10 @@ brew install \
   unixodbc \
   unzip \
   wxmac \
-  yamllint
+  yamllint \
 
-brew cask install \
+brew install \
+  --cask \
   iterm2 \
   rectangle \
   spotify \
@@ -52,18 +52,24 @@ brew cask install \
   docker \
   notion \
   squashfs \
-  virtualbox
+  virtualbox \
+  wireshark \
+  wireshark-chmodbpf \
+  zerotier-one
 
 ##
 ## asdf
 ##
+git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.8.0
 asdf plugin-add erlang https://github.com/asdf-vm/asdf-erlang.git
 asdf plugin-add elixir https://github.com/asdf-vm/asdf-elixir.git
 asdf plugin-add nodejs https://github.com/asdf-vm/asdf-nodejs.git
 asdf plugin-add python
 asdf plugin-add java
 bash ~/.asdf/plugins/nodejs/bin/import-release-team-keyring
-echo -e "\n. $(brew --prefix asdf)/asdf.sh" >> ~/.zshrc
+echo -e "\n. $HOME/.asdf/asdf.sh" >> ~/.zshrc
+echo -e "\n. $HOME/.asdf/completions/asdf.bas" >> ~/.zshrc
+
 asdf install erlang 23.0.2
 asdf global erlang 23.0.2
 asdf install elixir 1.10.3-otp-23

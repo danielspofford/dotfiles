@@ -64,12 +64,6 @@ if ! ssh-add -l | grep dannyspofford &>/dev/null; then
   done
 fi
 
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/daniel/google-cloud-sdk/path.zsh.inc' ]; then source '/Users/daniel/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/Users/daniel/google-cloud-sdk/completion.zsh.inc' ]; then source '/Users/daniel/google-cloud-sdk/completion.zsh.inc'; fi
-
 show_virtual_env() {
   if [ -n "$VIRTUAL_ENV" ]; then
     echo "($(basename $VIRTUAL_ENV))"
@@ -86,6 +80,17 @@ export PATH="/usr/local/opt/openssl/bin:$PATH"
 
 export SDKROOT="$(xcrun --sdk macosx --show-sdk-path)"
 
-. /usr/local/opt/asdf/asdf.sh
-
 export PATH="/usr/local/sbin:$PATH"
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/daniel/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/daniel/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/daniel/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/daniel/google-cloud-sdk/completion.zsh.inc'; fi
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /usr/local/bin/terraform terraform
+
+. ~/.asdf/plugins/java/set-java-home.zsh
+
+. $HOME/.asdf/asdf.sh
