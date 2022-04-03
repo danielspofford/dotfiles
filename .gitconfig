@@ -5,6 +5,7 @@
   insteadOf = https://github.com/
 [commit]
   template = ~/.gitmessage
+	gpgsign = true
 [core]
   excludesfile = ~/.gitignore
   editor = nvim
@@ -15,3 +16,7 @@
   path = ~/dev/git/very-possible/.gitconfig
 [includeIf "gitdir:~/dev/git/forks/"]
   path = ~/dev/git/forks/.gitconfig
+[init]
+	defaultBranch = main
+[pull]
+	ff = only

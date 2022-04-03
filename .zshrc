@@ -82,15 +82,32 @@ export SDKROOT="$(xcrun --sdk macosx --show-sdk-path)"
 
 export PATH="/usr/local/sbin:$PATH"
 
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /usr/local/bin/terraform terraform
+
+. ~/.asdf/plugins/java/set-java-home.zsh
+
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/daniel/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/daniel/google-cloud-sdk/path.zsh.inc'; fi
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/daniel/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/daniel/google-cloud-sdk/completion.zsh.inc'; fi
 
-autoload -U +X bashcompinit && bashcompinit
-complete -o nospace -C /usr/local/bin/terraform terraform
-
-. ~/.asdf/plugins/java/set-java-home.zsh
+export PATH="$HOME/.pyenv/bin:$PATH"
+export PATH="/usr/local/bin:$PATH"
 
 . $HOME/.asdf/asdf.sh
+
+export LDFLAGS="-L/usr/local/opt/zlib/lib -L/usr/local/opt/bzip2/lib"
+export CPPFLAGS="-I/usr/local/opt/zlib/include -I/usr/local/opt/bzip2/include"
+
+export PATH="$HOME/.poetry/bin:$PATH"
+
+export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"
+export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
+export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include"
+export PKG_CONFIG_PATH="/usr/local/opt/openssl@1.1/lib/pkgconfig"
+
+export PATH="$HOME/.docker/cli-plugins:$PATH"
+
+export GPG_TTY=$(tty)

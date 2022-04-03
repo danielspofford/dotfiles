@@ -10,26 +10,21 @@ Plug 'jlanzarotta/bufexplorer' " view recent vim buffers
 Plug 'tpope/vim-vinegar' " improves directory navigation on top of netrw
 
 " development improvements
-Plug 'joshdick/onedark.vim'
-Plug 'editorconfig/editorconfig-vim' " respect various rules like line length
 Plug 'airblade/vim-gitgutter' " git status in nvim gutter
-Plug 'rizzatti/dash.vim' " integration with dash documentation tool
 Plug 'dense-analysis/ale' " linters and fixers
-Plug 'sheerun/vim-polyglot' " sweeping language support
+Plug 'editorconfig/editorconfig-vim' " respect various rules like line length
 Plug 'ianks/vim-tsx' " fix tsx highlighting
-Plug 'tpope/vim-git' " git syntax hightlighting
-Plug 'ycm-core/youcompleteme'
+Plug 'joshdick/onedark.vim'
+Plug 'neovim/nvim-lspconfig' " collection of common configurations for the Nvim LSP client
+Plug 'nvim-lua/completion-nvim' " autocompletion framework for built-in LSP
+Plug 'nvim-lua/lsp_extensions.nvim' " extensions to built-in LSP, for example, providing type inlay hints
+Plug 'rizzatti/dash.vim' " integration with dash documentation tool
+Plug 'sheerun/vim-polyglot' " sweeping language support
 Plug 'tpope/vim-commentary' " support for toggling comments
 Plug 'tpope/vim-endwise' " adds closing tags for various languages on <enter>
-Plug 'tpope/vim-surround' " CRUDing surrounding tags/quotes
 Plug 'tpope/vim-fugitive' " git wrapper
-" Plug 'vim-airline/vim-airline' " status bar
-
-Plug 'autozimu/LanguageClient-neovim', {
-    \ 'branch': 'next',
-    \ 'do': 'bash install.sh',
-    \ }
-let g:LanguageClient_settingsPath = '/Users/daniel/git/daniel/dotfiles/neovim-languageclient-settings.json'
+Plug 'tpope/vim-git' " git syntax hightlighting
+Plug 'tpope/vim-surround' " CRUDing surrounding tags/quotes
 
 Plug 'fatih/vim-go'
 call plug#end()
@@ -38,16 +33,11 @@ call plug#end()
 " LANGUAGES
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" elixir
-let g:LanguageClient_serverCommands = {
-\ 'elixir': ['/Users/daniel/git/daniel/dotfiles/artifacts/elixir-ls/rel/language_server.sh'],
-\ }
-
-" golang
-au FileType go set expandtab
-au FileType go set shiftwidth=2
-au FileType go set softtabstop=2
-au FileType go set tabstop=2
+" markdown
+set expandtab
+set tabstop=2
+set softtabstop=2
+set shiftwidth=2
 
 " fatih/vim-go options
 let g:go_highlight_build_constraints = 1
@@ -91,6 +81,7 @@ let g:ale_fixers = {
   \ 'javascript': ['prettier'],
   \ 'json': ['prettier'],
   \ 'python': ['black', 'isort'],
+  \ 'rust': ['rustfmt'],
   \ 'typescript': ['prettier'],
   \}
 
@@ -121,7 +112,8 @@ endif
 if (has("termguicolors"))
   set termguicolors
 endif
-syntax on
+syntax enable
+filetype plugin indent on
 colorscheme onedark
 
 " Whitespaces
@@ -129,6 +121,13 @@ highlight ExtraWhitespace ctermbg=red guibg=red
 match ExtraWhitespace /\s\+$/
 autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
 autocmd BufWinLeave * call clearmatches()
+
+" Show diagnostic popup on cursor hold
+autocmd CursorHold * lua vim.diagnostic.open_float({focusable = false})
+
+" Enable type inlay hints
+autocmd CursorMoved,InsertLeave,BufEnter,BufWinEnter,TabEnter,BufWritePost *
+\ lua require'lsp_extensions'.inlay_hints{ prefix = '', highlight = "Comment", enabled = {"TypeHint", "ChainingHint", "ParameterHint"} }
 
 " Together these commands show relative numbers as well as actual number for
 " the active line
@@ -152,13 +151,6 @@ let g:Lf_WildIgnore={
 	\ 'file': []
 	\}
 
-" Keybindings
-nnoremap <F5> :call LanguageClient_contextMenu()<CR>
-" Or map each action separately
-nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
-nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
-nnoremap <silent> <F2> :call LanguageClient#textDocument_rename()<CR>
-
 nnoremap <Leader>e :BufExplorer<cr>
 nnoremap <Leader>f :Files<cr>
 " command! -bang Files call fzf#vim#files('--glob !.git/*', <bang>0)
@@ -179,10 +171,78 @@ nnoremap <Leader>s :Find<space>
 command! -bang -nargs=* Find call fzf#vim#grep(
 	\ 'rg --column --line-number --no-heading --fixed-strings --ignore-case --no-ignore --hidden --follow '.$RG_IGNORE.' --color "always" '.shellescape(<q-args>), 1, <bang>0)
 
+" Code navigation shortcuts
+nnoremap <silent> <c-]> <cmd>lua vim.lsp.buf.definition()<CR>
+nnoremap <silent> K     <cmd>lua vim.lsp.buf.hover()<CR>
+nnoremap <silent> gD    <cmd>lua vim.lsp.buf.implementation()<CR>
+nnoremap <Leader>k      <cmd>lua vim.lsp.buf.signature_help()<CR>
+nnoremap <silent> 1gD   <cmd>lua vim.lsp.buf.type_definition()<CR>
+nnoremap <silent> gr    <cmd>lua vim.lsp.buf.references()<CR>
+nnoremap <silent> g0    <cmd>lua vim.lsp.buf.document_symbol()<CR>
+nnoremap <silent> gW    <cmd>lua vim.lsp.buf.workspace_symbol()<CR>
+nnoremap <silent> gd    <cmd>lua vim.lsp.buf.declaration()<CR>
+nnoremap <silent> ga    <cmd>lua vim.lsp.buf.code_action()<CR>
+
 " Providers
 let g:python_host_prog='~/virtualenvironment/python2_latest/bin/python'
 let g:python3_host_prog='~/virtualenvironment/python3_latest/bin/python'
 
-
 set runtimepath^=~/.vim runtimepath+=~/.vim/after
 let &packpath = &runtimepath
+
+""""""""""""""""""""""""
+" <configure Rust LSP> "
+""""""""""""""""""""""""
+
+" Set completeopt to have a better completion experience
+" :help completeopt
+" menuone: popup even when there's only one match
+" noinsert: Do not insert text until a selection is made
+" noselect: Do not select, force user to select one from the menu
+set completeopt=menuone,noinsert,noselect
+
+" Avoid showing extra messages when using completion
+set shortmess+=c
+
+" Configure LSP
+" https://github.com/neovim/nvim-lspconfig#rust_analyzer
+lua <<EOF
+
+-- nvim_lsp object
+local nvim_lsp = require'lspconfig'
+
+-- function to attach completion when setting up lsp
+local on_attach = function(client)
+    require'completion'.on_attach(client)
+end
+
+-- Enable rust_analyzer
+nvim_lsp.rust_analyzer.setup({
+  on_attach=on_attach,
+  settings = {
+    ["rust-analyzer"] = {
+      checkOnSave = {
+        command = "clippy"
+      }
+    }
+  }
+})
+
+-- Enable diagnostics
+vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+  vim.lsp.diagnostic.on_publish_diagnostics, {
+    virtual_text = true,
+    signs = true,
+    update_in_insert = true,
+  }
+)
+EOF
+
+"""""""""""""""""""""""""
+" </configure Rust LSP> "
+"""""""""""""""""""""""""
+
+set expandtab
+set shiftwidth=2
+set softtabstop=2
+set tabstop=2

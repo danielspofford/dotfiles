@@ -9,8 +9,14 @@ insert_final_newline = true
 max_line_length = 98
 trim_trailing_whitespace = true
 
+[**.rs]
+indent_size = 4
+
 [**.{ex,exs}]
 max_line_length = 98
+
+[**.{yaml,yml}]
+max_line_length = 100
 
 [**.py]
 max_line_length = 88

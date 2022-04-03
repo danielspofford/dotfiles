@@ -35,6 +35,7 @@ brew install \
   postgres \
   readline \
   ripgrep \
+  rust-analyzer \
   sqlite \
   tmux \
   tree \
