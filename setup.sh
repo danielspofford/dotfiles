@@ -40,9 +40,8 @@ brew install \
   terraform \
   tree \
   unixodbc \
-  unzip \
   wxmac \
-  yamllint \
+  yamllint
 
 brew install \
   --cask \
