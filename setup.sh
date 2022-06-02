@@ -41,7 +41,9 @@ brew install \
   tree \
   unixodbc \
   wxmac \
-  yamllint
+  yamllint \
+  gpg \
+  gawk
 
 brew install \
   --cask \
