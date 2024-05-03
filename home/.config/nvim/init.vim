@@ -2,9 +2,15 @@
 " GENERAL
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-set rtp+=/usr/local/opt/fzf
+" If installed using Homebrew
+" set rtp+=/usr/local/opt/fzf
+
+" If installed using Homebrew on Apple Silicon
+set rtp+=/opt/homebrew/opt/fzf
+
 call plug#begin()
 " general nvim improvements
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim' " vim integration for fzf
 Plug 'jlanzarotta/bufexplorer' " view recent vim buffers
 Plug 'tpope/vim-vinegar' " improves directory navigation on top of netrw
@@ -12,7 +18,6 @@ Plug 'tpope/vim-vinegar' " improves directory navigation on top of netrw
 " development improvements
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-treesitter/nvim-treesitter'
-Plug 'joshdick/onedark.vim'
 Plug 'editorconfig/editorconfig-vim' " respect various rules like line length
 Plug 'airblade/vim-gitgutter' " git status in nvim gutter
 Plug 'rizzatti/dash.vim' " integration with dash documentation tool
@@ -23,6 +28,8 @@ Plug 'tpope/vim-endwise' " adds closing tags for various languages on <enter>
 Plug 'tpope/vim-surround' " CRUDing surrounding tags/quotes
 Plug 'tpope/vim-fugitive' " git wrapper
 Plug 'fatih/vim-go'
+Plug 'joshdick/onedark.vim' " theme
+Plug 'sainnhe/everforest' " theme
 call plug#end()
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -34,11 +41,47 @@ local on_attach = function(client, buffer)
   if client.name == "yamlls" then
     client.resolved_capabilities.document_formatting = true
   end
+  if client.name == "bashls" then
+    client.resolved_capabilities.document_formatting = true
+  end
 end
 
 local on_init = function(client, initialize_result)
   client.resolved_capabilities.document_formatting = true
 end
+
+local lspconfig = require("lspconfig")
+local configs = require("lspconfig.configs")
+
+local lexical_config = {
+  filetypes = { "elixir", "eelixir", "heex" },
+  cmd = { vim.env.HOME .. "/repos/lexical-lsp/lexical/_build/dev/package/lexical/bin/start_lexical.sh" },
+  settings = {},
+}
+
+if not configs.lexical then
+  configs.lexical = {
+    default_config = {
+      filetypes = lexical_config.filetypes,
+      cmd = lexical_config.cmd,
+      root_dir = function(fname)
+        return lspconfig.util.root_pattern("mix.exs", ".git")(fname) or vim.loop.os_homedir()
+      end,
+      -- optional settings
+      settings = lexical_config.settings,
+    },
+  }
+end
+
+lspconfig.lexical.setup({})
+
+require'lspconfig'.bashls.setup{
+  settings = {
+    shfmt = {
+      path = "shfmt"
+    }
+  }
+}
 
 require'lspconfig'.eslint.setup{
   on_init = on_init,
@@ -64,14 +107,6 @@ require'lspconfig'.yamlls.setup{
   }
 }
 
-require'lspconfig'.elixirls.setup{
-  cmd = { "/Users/daniel/repositories/elixir-ls/language_server.sh" }
-}
-
-require'lspconfig'.elixirls.setup{
-  cmd = { "/Users/daniel/repositories/elixir-ls/language_server.sh" }
-}
-
 require'nvim-treesitter.configs'.setup {
   ensure_installed = { "elixir", "hcl", "lua", "rust" },
   sync_install = false,
@@ -83,7 +118,7 @@ require'nvim-treesitter.configs'.setup {
 }
 EOF
 
-autocmd BufWritePre * lua vim.lsp.buf.formatting_sync()
+autocmd BufWritePre * lua vim.lsp.buf.format()
 
 " golang
 au FileType go set expandtab
@@ -142,7 +177,7 @@ if (has("termguicolors"))
   set termguicolors
 endif
 syntax on
-colorscheme onedark
+colorscheme everforest
 
 " Whitespaces
 highlight ExtraWhitespace ctermbg=red guibg=red
@@ -200,3 +235,6 @@ let g:python3_host_prog='~/virtualenvironment/python3_latest/bin/python'
 
 set runtimepath^=~/.vim runtimepath+=~/.vim/after
 let &packpath = &runtimepath
+
+" sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
+"        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'

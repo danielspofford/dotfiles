@@ -1,5 +1,5 @@
 # Path to your oh-my-zsh installation.
-export ZSH=/Users/daniel/.oh-my-zsh
+export ZSH=$HOME/.oh-my-zsh
 
 ZSH_THEME="spoff"
 
@@ -23,13 +23,12 @@ fi
 
 source ~/.alias
 
-eval "$(fasd --init auto)"
-
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+eval "$(fzf --zsh)"
 
 export ERL_AFLAGS="-kernel shell_history enabled"
 
-[[ -s "/Users/daniel/.gvm/scripts/gvm" ]] && source "/Users/daniel/.gvm/scripts/gvm"
+[[ -s "$HOME/.gvm/scripts/gvm" ]] && source "$HOME/.gvm/scripts/gvm"
 
 export RG_IGNORE='\
   --glob "!.git/*" \
@@ -82,13 +81,34 @@ export SDKROOT="$(xcrun --sdk macosx --show-sdk-path)"
 
 export PATH="/usr/local/sbin:$PATH"
 
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/daniel/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/daniel/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/Users/daniel/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/daniel/google-cloud-sdk/completion.zsh.inc'; fi
-
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /usr/local/bin/terraform terraform
 
-. /usr/local/opt/asdf/libexec/asdf.sh
+. /opt/homebrew/opt/asdf/libexec/asdf.sh
+. /opt/homebrew/opt/asdf/etc/bash_completion.d/asdf.bash
+
+# has to happen after sourcing asdf
+export PATH=$PATH:$(go env GOPATH)/bin
+
+fasd_cache="$HOME/.fasd-init-bash"
+if [ "$(command -v fasd)" -nt "$fasd_cache" -o ! -s "$fasd_cache" ]; then
+  fasd --init posix-alias bash-hook bash-ccomp bash-ccomp-install >| "$fasd_cache"
+fi
+source "$fasd_cache"
+unset fasd_cache
+eval "$(fasd --init auto)"
+
+dotfiles_setup() {
+  cd $HOME/repos/danielspofford/dotfiles
+  ./setup.sh
+}
+
+dotfiles_symlink() {
+  cd $HOME/repos/danielspofford/dotfiles
+  ./symlink.sh
+}
+
+dotfiles_lsp() {
+  npm i -g bash-language-server
+  go install mvdan.cc/sh/v3/cmd/shfmt@latest
+}
